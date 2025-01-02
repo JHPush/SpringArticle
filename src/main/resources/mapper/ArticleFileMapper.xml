@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+
+<mapper namespace="com.example.articleapp.mapper.ArticleFileMapper">
+
+    <insert id="insertArticleFile" parameterType ="java.util.List">
+          INSERT INTO article_file (filename, filepath, size, article_id)
+          VALUES 
+
+          <foreach collection="List" item="file" separator=",">
+          (#{file.filename},#{file.filepath},#{file.size},#{file.articleId})
+          </foreach>
+    </insert>
+
+</mapper>

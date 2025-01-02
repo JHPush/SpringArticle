@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+
+  <mapper namespace="com.example.articleapp.mapper.ArticleMapper">
+  
+    <select id="selectArticleList" resultType ="ArticleDto">
+          SELECT 
+            id,
+            title,
+            content,
+            writer,
+            reg_date as regDate 
+          FROM articles 
+          ORDER BY id DESC
+    </select>
+
+
+    <insert id="insertArticle" parameterType="ArticleDto">
+        <selectKey resultType = "int" keyProperty="id" order = "AFTER">
+        SELECT MAX(id) as id
+        FROM articles
+        </selectKey>
+
+          INSERT INTO articles(title, content, writer)
+          VALUES (#{title}, #{content}, #{writer})
+    </insert>
+
+
+    <select id="detailArticle" resultType = "ArticleDto" parameterType = "int">
+          SELECT 
+            id, title, content, writer, reg_date as regDate 
+        FROM articles
+          WHERE id = #{id}
+    </select>
+
+
+    <update id="updateArticle" parameterType="ArticleDto">
+        UPDATE articles SET 
+            title = #{title},
+            content = #{content},
+            writer = #{writer}
+        WHERE id = #{id}
+    </update>
+
+
+    <delete id="deleteArticle" parameterType = "int">
+          DELETE FROM articles WHERE id = #{id}
+    </delete>
+
+
+    <select id="findArticleList" resultType="ArticleDto" parameterType="map">
+          SELECT 
+            id,
+            title,
+            content,
+            writer,
+            reg_date as regDate 
+          FROM articles
+          <if test ="keyField != '' and keyWord != ''">
+                <trim prefix="WHERE">
+                    <choose>
+                        <when test = "keyField == 'title'">
+                        title LIKE CONCAT('%', #{keyWord}, '%')
+                        </when>
+                        <when test = "keyField == 'content'">
+                        content LIKE CONCAT('%', #{keyWord}, '%')
+                        </when>
+                        <when test = "keyField == 'writer'">
+                        writer LIKE CONCAT('%', #{keyWord}, '%')
+                        </when>
+                    </choose>
+                </trim>
+          </if>
+    ORDER BY id DESC;
+
+    </select>
+
+</mapper>
