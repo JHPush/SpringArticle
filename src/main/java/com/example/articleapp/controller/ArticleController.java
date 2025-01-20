@@ -4,9 +4,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.articleapp.dto.ArticleDto;
+import com.example.articleapp.exception.ArticleNotFoundException;
 import com.example.articleapp.service.ArticleService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +28,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 
+
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@Slf4j
 public class ArticleController {
     
     private final ArticleService articleService;
@@ -52,7 +57,7 @@ public class ArticleController {
     @PostMapping("/articles")
     public ResponseEntity<Map<String, Integer>> postArticle(
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
-            @RequestPart(value = "article") ArticleDto articleDto) {
+            @Valid @RequestPart(value = "article") ArticleDto articleDto) {
         int articleId = articleService.registerArticle(articleDto, files);
         return new ResponseEntity<>(Map.of("id", articleId), HttpStatus.CREATED);
     }
@@ -65,9 +70,13 @@ public class ArticleController {
 
     // 게시글 수정 요청
     @PutMapping("/article/{id}")
-    public ResponseEntity<String> putArticle(@PathVariable("id") int id, @RequestBody ArticleDto articleDto) {
+    public ResponseEntity<String> putArticle(@PathVariable("id") int id,  @RequestBody ArticleDto articleDto) {
         articleDto.setId(id);
         articleService.modifyArticle(articleDto);
+        // ArticleDto foundArticle = articleService.retrieveArticle(id);
+        // if(foundArticle == null){
+        //     throw new ArticleNotFoundException();
+        // }
         return new ResponseEntity<>("", HttpStatus.NO_CONTENT);
     }
 

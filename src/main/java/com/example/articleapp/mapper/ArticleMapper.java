@@ -18,5 +18,6 @@ public interface ArticleMapper {
 
     void deleteArticle(int id);
     List<ArticleDto> findArticleList(Map<String,String> map);
+    // ArticleDto selectArticleById(int id);
 
 }

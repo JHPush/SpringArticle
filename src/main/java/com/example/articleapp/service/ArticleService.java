@@ -17,6 +17,7 @@ import com.example.articleapp.util.CustomFileUtil;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor // 파이널 등 NON null 변수들의 생성자를 자동 생성
@@ -71,4 +72,8 @@ public class ArticleService {
     public ResponseEntity<Resource> download(String filename){
         return customFileUtil.download(filename);
     }
+
+    // public ArticleDto getArticleById(int id){
+    //     return articleMapper.selectArticleById(id);
+    // }
 }

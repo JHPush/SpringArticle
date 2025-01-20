@@ -28,13 +28,56 @@
           VALUES (#{title}, #{content}, #{writer})
     </insert>
 
+    <resultMap id = "selectArticleResultMap" type = "ArticleDto">
+        <id property="id" column="id"/>
+        <result property ="title" column ="title"/>
+        <result property ="content" column ="content"/>
+        <result property ="writer" column ="writer"/>
+        <result property ="regDate" column ="reg_date"/>
 
-    <select id="detailArticle" resultType = "ArticleDto" parameterType = "int">
+        <association property="usersDto" javaType="UsersDto">
+            <id property="id" column="user_id"/>
+            <result property ="username" column ="userName"/>
+            <result property ="email" column ="email"/>
+        </association>
+        <collection property="files" ofType="ArticleFileDto">
+            <id property="id" column="file_id"/>
+            <result property ="filename" column ="fileName"/>
+            <result property ="filepath" column ="filePath"/>
+            <result property ="size" column ="size"/>
+            <result property ="articleId" column ="article_id"/>
+        </collection>
+    </resultMap>
+    
+    <select id="detailArticle" parameterType="int" resultMap="selectArticleResultMap">
+        SELECT 
+            A.id AS id,
+            A.title AS title,
+            A.content AS content,
+            A.writer AS writer,
+            A.reg_date AS reg_date,
+            U.id AS user_id,
+            U.username AS userName,
+            U.email AS email,
+            F.id AS file_id,
+            F.filename AS fileName,
+            F.filepath AS filePath,
+            F.size AS size,
+            F.article_id AS article_id
+        FROM articles AS A
+        INNER JOIN users AS U
+        ON A.user_id = U.id
+        LEFT OUTER JOIN article_file AS F
+        ON A.id = F.article_id
+        WHERE A.id = #{id}
+    </select>
+
+    <!-- <select id="detailArticle" resultType = "ArticleDto" parameterType = "int">
           SELECT 
             id, title, content, writer, reg_date as regDate 
         FROM articles
           WHERE id = #{id}
-    </select>
+    </select> -->
 
 
     <update id="updateArticle" parameterType="ArticleDto">
@@ -75,7 +118,52 @@
                 </trim>
           </if>
     ORDER BY id DESC;
-
     </select>
+
+<!-- <resultMap id="selectArticleByIdResultMap" type="ArticleDto">
+    <id property="id" column="id"/>
+    <result property="title" column="title"/>
+    <result property="content" column="content"/>
+    <result property="writer" column="writer"/>
+    <result property="regDate" column="regDate"/>
+
+    <association property="user" javaType="UserDto">
+        <id property="id" column="userId"/>
+        <result property="username" column="userName"/>
+        <result property="email" column="email"/>
+        <result property="password" column="password"/>
+    </association>
+
+    <collection property="files" ofType="ArticleFileDto">
+        <id property="id" column="fileId"/>
+        <result property="filename" column="filename"/>
+        <result property="filepath" column="filepath"/>
+        <result property="size" column="size"/>
+        <result property="articleId" column="articleId"/>
+    </collection>
+</resultMap>
+
+<select id="selectArticleById" parameterType="int" resultMap="selectArticleByIdResultMap">
+    SELECT
+        A.id as id,
+        A.title as title,
+        A.content as content,
+        A.writer as writer,
+        A.reg_date as regDate,
+        U.id as userId,
+        U.name as userName,
+        U.email as email,
+        F.id as fileId,
+        F.filename as filename,
+        F.filepath as filepath,
+        F.size as size,
+        F.article_id as articleId
+    FROM articles A
+    INNER JOIN users U
+        ON A.user_id = U.id
+    LEFT OUTER JOIN article_file F
+        ON A.id = F.article_id
+    WHERE A.id = #{id}
+</select> -->
 
 </mapper>
